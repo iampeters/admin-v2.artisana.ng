@@ -22,6 +22,16 @@ function AllUsersPagination({ handleChange, page, total, allMainUsers }) {
     <div className={classes.root}>
       {allMainUsers ? (
         <div>
+          <div
+            className="col-lg-12 col-md-12 col-xs-12 col-sm-12 col-12"
+            style={{
+              fontWeight: "bold",
+              marginBottom: "20px",
+              color: "#974578",
+            }}
+          >
+            Users
+          </div>
           <div style={{ marginBottom: "20px" }}>
             <AllMainUserTable allMainUsers={allMainUsers} />
           </div>

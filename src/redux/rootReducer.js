@@ -3,6 +3,7 @@ import adminAuthCredentials from "./adminAtuhCredentials";
 import allAdmins from "./allAdminsReducer";
 import allAdminUsers from "./allAdminUsers";
 import allMainUsers from "./allMainUsers";
+import rolesReducers from "./rolesReducers";
 import routersReducer from "./routerReducers";
 const rootReducer = combineReducers({
   adminAuth: adminAuthCredentials,
@@ -10,5 +11,6 @@ const rootReducer = combineReducers({
   adminUsers: allAdminUsers,
   allAdmins: allAdmins,
   allMainUsers: allMainUsers,
+  totalRoles: rolesReducers,
 });
 export default rootReducer;

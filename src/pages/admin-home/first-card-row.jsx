@@ -80,5 +80,5 @@ export default function FirstCards() {
       </div>
     );
   });
-  return <div className="row">{listCards}</div>;
+  return <div className="row m-0">{listCards}</div>;
 }

@@ -9,6 +9,7 @@ import mainUsers from "./users/main-users";
 import MainUsers from "./users/main-users";
 import MainUserDetails from "./users/all-main-user-details";
 import Roles from "./roles/roles";
+import CreateNewAdmin from "./admins/create-new-admin";
 
 class PageCover extends Component {
   state = {};
@@ -22,9 +23,12 @@ class PageCover extends Component {
             component={UserDetails}
           ></Route>
           <Route path="/artisans" component={Artisans}></Route>
+          <Route path="/admins/create" component={CreateNewAdmin}></Route>
           <Route path="/admins/:adminDetails" component={AdminDetails}></Route>
           <Route path="/admins" component={Admins}></Route>
+
           <Route path="/users/:userId" component={MainUserDetails}></Route>
+
           <Route path="/users" component={MainUsers}></Route>
           <Route path="/roles" component={Roles}></Route>
         </Switch>

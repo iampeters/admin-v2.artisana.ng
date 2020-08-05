@@ -6,9 +6,8 @@ import { connect } from "react-redux";
 import UsersTable from "../../pages/artisans/users-table";
 import AddIcon from "@material-ui/icons/Add";
 import PageLoader from "../../components/loader/pageLoader";
-import AdminTable from "./adminTable";
 import { Button } from "@material-ui/core";
-import { Link } from "react-router-dom";
+import RolesTable from "./roles-table";
 const useStyles = makeStyles((theme) => ({
   root: {
     "& > * + *": {
@@ -17,43 +16,44 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function AdminPagination({ handleChange, page, total, allAdmins }) {
+function RolesPagination({ handleChange, page, total, allRoles }) {
   const classes = useStyles();
-  console.log(allAdmins);
+
   return (
     <div className={classes.root}>
-      {allAdmins ? (
+      {allRoles ? (
         <div>
-          <div className="row m-0">
-            <div
-              className="col-lg-6 col-md-6 col-xs-12 col-sm-12 col-12"
-              style={{
-                fontWeight: "bold",
-                marginBottom: "20px",
-                color: "#974578",
-              }}
-            >
-              Admins
-            </div>
-            <div
-              className="col-lg-6 col-md-6 col-xs-12 col-sm-12 col-12"
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-              }}
-            >
-              <Link to="/admins/create">
-                <Button
-                  variant="outlined"
-                  style={{ color: "#974578", marginRight: "10px" }}
-                >
-                  New <AddIcon />
-                </Button>
-              </Link>
-            </div>
-          </div>
           <div style={{ marginBottom: "20px" }}>
-            <AdminTable allAdmins={allAdmins} />
+            <div className="row m-0">
+              <div
+                className="col-lg-6 col-md-6 col-xs-12 col-sm-12 col-12"
+                style={{
+                  fontWeight: "bold",
+                  marginBottom: "20px",
+                  color: "#974578",
+                }}
+              >
+                Roles
+              </div>
+              <div
+                className="col-lg-6 col-md-6 col-xs-12 col-sm-12 col-12"
+                style={{
+                  fontWeight: "bold",
+                  marginBottom: "20px",
+                  color: "#974578",
+                  display: "flex",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <Button style={{ background: "#974578", color: "white" }}>
+                  New
+                  <AddIcon />
+                </Button>
+              </div>
+              <div className="col-lg-12">
+                <RolesTable allRoles={allRoles} />
+              </div>
+            </div>
           </div>
           <Pagination count={total} page={page} onChange={handleChange} />
         </div>
@@ -79,4 +79,4 @@ function AdminPagination({ handleChange, page, total, allAdmins }) {
   );
 }
 
-export default AdminPagination;
+export default RolesPagination;
