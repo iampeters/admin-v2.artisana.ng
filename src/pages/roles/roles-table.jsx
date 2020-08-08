@@ -46,14 +46,16 @@ export default function RolesTable({ allRoles }) {
                     <TableCell align="center">
                       {getDate(row.createdOn)}
                     </TableCell>
-                    <TableCell align="center">
-                      {getDate(row.createdBy)}
-                    </TableCell>
+                    <TableCell align="center">{row.createdBy}</TableCell>
                     <TableCell align="center">
                       {" "}
-                      <Button style={{ background: "#974578", color: "white" }}>
-                        View More
-                      </Button>
+                      <Link to={"roles/" + row._id}>
+                        <Button
+                          style={{ background: "#974578", color: "white" }}
+                        >
+                          View More
+                        </Button>
+                      </Link>
                     </TableCell>
                   </TableRow>
                 ))}

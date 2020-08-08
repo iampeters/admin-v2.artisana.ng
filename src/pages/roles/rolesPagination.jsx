@@ -7,6 +7,7 @@ import UsersTable from "../../pages/artisans/users-table";
 import AddIcon from "@material-ui/icons/Add";
 import PageLoader from "../../components/loader/pageLoader";
 import { Button } from "@material-ui/core";
+import { Link } from "react-router-dom";
 import RolesTable from "./roles-table";
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,10 +46,12 @@ function RolesPagination({ handleChange, page, total, allRoles }) {
                   justifyContent: "flex-end",
                 }}
               >
-                <Button style={{ background: "#974578", color: "white" }}>
-                  New
-                  <AddIcon />
-                </Button>
+                <Link to="/roles/create">
+                  <Button style={{ background: "#974578", color: "white" }}>
+                    New
+                    <AddIcon />
+                  </Button>
+                </Link>
               </div>
               <div className="col-lg-12">
                 <RolesTable allRoles={allRoles} />

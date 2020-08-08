@@ -4,12 +4,13 @@ import BadNetWork from "../../components/bad-newtwork/bad-newtwork";
 import AdminPagination from "../admins/admin-pagination";
 class Admins extends Component {
   state = {
+    loader: false,
     page: 0,
     pageSize: 25,
     whereCondition: {},
     filter: {},
   };
-  handleRequest = (paginationConfig = this.state) => {
+  handleRequest = (paginationConfig = this.state, value) => {
     let page = paginationConfig.page + 1;
 
     this.setState({
@@ -43,24 +44,63 @@ class Admins extends Component {
   componentDidMount() {
     this.handleRequest();
   }
-  handleChange = (event) => {
+  handleChange = (value) => {
+    // console.log(value);
     this.setState({
-      page: 1,
+      loader: true,
     });
+    let page = this.state.page + value;
+    console.log(page);
+    this.setState({
+      whereCondition: this.state.filter,
+    });
+    let filter = this.state.whereCondition;
+
+    const getActiveAdmin = JSON.parse(
+      localStorage.getItem("persist:adminAuth")
+    );
+    const userTokens = JSON.parse(getActiveAdmin.adminAuth);
+    const tokens = userTokens.adminStatus;
+    const url = `https://sandbox.artisana.ng/api/admins/?page=${page}&&pageSize=${
+      this.state.pageSize
+    }&&whereCondition=${JSON.stringify(filter)}`;
+    fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${tokens.token}`,
+      },
+    })
+      .then((data) => {
+        data.json().then((data) => {
+          this.props.sendAllAdmins(data);
+          this.setState({
+            loader: false,
+          });
+        });
+      })
+      .catch((error) => {
+        this.props.sendAllAdmins("Failed to fetch");
+      });
   };
+
   render() {
-    // console.log(this.props.allAdmins);
+    console.log(this.props.allAdmins.items);
+    const total = Math.ceil(this.props.allAdmins.total / 25);
     return (
       <div style={{ marginTop: "20px" }}>
         {this.props.allAdmins === "Failed to fetch" ? (
           <BadNetWork />
         ) : (
-          <AdminPagination
-            total={this.props.allAdmins.total}
-            page={this.state.page}
-            handleChange={this.handleChange}
-            allAdmins={this.props.allAdmins.items}
-          />
+          <div>
+            <AdminPagination
+              total={total}
+              page={this.state.page}
+              handleChange={this.handleChange}
+              allAdmins={this.props.allAdmins.items}
+              pageUpdate={this.handleRequest}
+              loader={this.state.loader}
+            />
+          </div>
         )}
       </div>
     );

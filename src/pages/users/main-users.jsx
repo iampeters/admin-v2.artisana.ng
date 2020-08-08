@@ -5,6 +5,7 @@ import AdminPagination from "../admins/admin-pagination";
 import AllUsersPagination from "./all-users-pagination";
 class MainUsers extends Component {
   state = {
+    loader: false,
     page: 0,
     pageSize: 25,
     whereCondition: {},
@@ -45,23 +46,56 @@ class MainUsers extends Component {
   componentDidMount() {
     this.handleRequest();
   }
-  handleChange = (event) => {
+  handleChange = (value) => {
     this.setState({
-      page: 1,
+      loader: true,
     });
+    let page = this.state.page + value;
+
+    this.setState({
+      whereCondition: this.state.filter,
+    });
+    let filter = this.state.whereCondition;
+
+    const getActiveAdmin = JSON.parse(
+      localStorage.getItem("persist:adminAuth")
+    );
+    const userTokens = JSON.parse(getActiveAdmin.adminAuth);
+    const tokens = userTokens.adminStatus;
+    const url = `https://sandbox.artisana.ng/api/users/admin/all?page=${page}&&pageSize=${
+      this.state.pageSize
+    }&&whereCondition=${JSON.stringify(filter)}`;
+    fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${tokens.token}`,
+      },
+    })
+      .then((data) => {
+        data.json().then((data) => {
+          this.props.sendAllUsers(data);
+          this.setState({
+            loader: false,
+          });
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        this.props.sendAllUsers("Failed to fetch");
+      });
   };
   render() {
-    // console.log(this.props.allAdmins);
+    const total = Math.ceil(this.props.allMainUsers.total / 25);
     return (
       <div style={{ marginTop: "20px" }}>
         {this.props.allMainUsers === "Failed to fetch" ? (
           <BadNetWork />
         ) : (
           <AllUsersPagination
-            total={this.props.allMainUsers.total}
-            page={this.state.page}
+            total={total}
             handleChange={this.handleChange}
             allMainUsers={this.props.allMainUsers.items}
+            loader={this.state.loader}
           />
         )}
       </div>

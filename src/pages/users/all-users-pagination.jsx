@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function AllUsersPagination({ handleChange, page, total, allMainUsers }) {
+function AllUsersPagination({ handleChange, total, allMainUsers, loader }) {
   const classes = useStyles();
   console.log(allMainUsers);
   return (
@@ -33,9 +33,37 @@ function AllUsersPagination({ handleChange, page, total, allMainUsers }) {
             Users
           </div>
           <div style={{ marginBottom: "20px" }}>
-            <AllMainUserTable allMainUsers={allMainUsers} />
+            {loader ? (
+              <div>
+                <div
+                  style={{
+                    justifyContent: "center",
+                    display: "flex",
+                    paddingTop: "50px",
+                  }}
+                >
+                  <PageLoader />
+                </div>
+                <div
+                  style={{
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    fontSize: "18px",
+                    marginTop: "5px",
+                    color: "#974578",
+                  }}
+                >
+                  Loading...
+                </div>
+              </div>
+            ) : (
+              <AllMainUserTable allMainUsers={allMainUsers} />
+            )}
           </div>
-          <Pagination count={total} page={page} onChange={handleChange} />
+          <Pagination
+            count={total}
+            onChange={(evt, value) => handleChange(value)}
+          />
         </div>
       ) : (
         <div

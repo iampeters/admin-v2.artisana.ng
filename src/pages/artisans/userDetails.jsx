@@ -2,7 +2,10 @@ import React, { Component } from "react";
 import ListsUsers from "../../components/lists-users/list-users";
 import PageLoader from "../../components/loader/pageLoader";
 import TextField from "@material-ui/core/TextField";
+import { Link } from "react-router-dom";
+
 import { getDate } from "../../components/time-date-converter/time-date-converter";
+import { Button } from "@material-ui/core";
 class UserDetails extends Component {
   state = {
     id: this.props.match.params.userDetails,
@@ -101,6 +104,34 @@ class UserDetails extends Component {
       <div>
         {this.state.hasResult ? (
           <div style={{ marginTop: "30px" }}>
+            <div className="row m-0">
+              <div
+                className="col-lg-6 col-md-6 col-xs-12 col-sm-12 col-12"
+                style={{
+                  fontWeight: "bold",
+                  marginBottom: "20px",
+                  color: "#974578",
+                }}
+              >
+                Artisan Details
+              </div>
+              <div
+                className="col-lg-6 col-md-6 col-xs-12 col-sm-12 col-12"
+                style={{
+                  fontWeight: "bold",
+                  marginBottom: "20px",
+                  color: "#974578",
+                  display: "flex",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <Link to="/artisans">
+                  <Button style={{ background: "#974578", color: "white" }}>
+                    Back
+                  </Button>
+                </Link>
+              </div>
+            </div>
             <div
               className="col-lg-12"
               style={{
@@ -128,20 +159,7 @@ class UserDetails extends Component {
                 ></img>
               </div>
             </div>
-            <div
-              className="col-lg-12"
-              style={{
-                marginBottom: "20px",
-                fontWeight: "bold",
-                textAlign: "center",
-              }}
-            >
-              <span style={{ fontWeight: "bold", color: "#974578" }}>
-                User ID
-              </span>
-              <br></br>
-              {this.state.userId ? this.state.userId : "N/A"}
-            </div>
+
             <div className="row m-0" style={{ paddingLeft: "15px" }}>
               <div
                 className="col-lg-12"

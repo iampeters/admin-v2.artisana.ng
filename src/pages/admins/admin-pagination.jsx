@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Pagination from "@material-ui/lab/Pagination";
@@ -17,9 +17,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function AdminPagination({ handleChange, page, total, allAdmins }) {
+function AdminPagination({ handleChange, total, allAdmins, loader }) {
   const classes = useStyles();
-  console.log(allAdmins);
+  // useEffect(() => pageUpdate());
   return (
     <div className={classes.root}>
       {allAdmins ? (
@@ -53,9 +53,40 @@ function AdminPagination({ handleChange, page, total, allAdmins }) {
             </div>
           </div>
           <div style={{ marginBottom: "20px" }}>
-            <AdminTable allAdmins={allAdmins} />
+            {loader ? (
+              <div>
+                <div
+                  style={{
+                    justifyContent: "center",
+                    display: "flex",
+                    paddingTop: "50px",
+                  }}
+                >
+                  <PageLoader />
+                </div>
+                <div
+                  style={{
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    fontSize: "18px",
+                    marginTop: "5px",
+                    color: "#974578",
+                  }}
+                >
+                  Loading...
+                </div>
+              </div>
+            ) : (
+              <AdminTable allAdmins={allAdmins} loader={loader} />
+            )}
           </div>
-          <Pagination count={total} page={page} onChange={handleChange} />
+
+          <Pagination
+            count={total}
+            showFirstButton
+            showLastButton
+            onChange={(evt, value) => handleChange(value)}
+          />
         </div>
       ) : (
         <div style={{ marginTop: "20%" }}>

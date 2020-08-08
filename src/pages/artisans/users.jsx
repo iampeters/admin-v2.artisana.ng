@@ -5,6 +5,7 @@ import PaginationControlled from "../../components/pagination/pagination";
 
 class Users extends Component {
   state = {
+    loader: false,
     page: 0,
     pageSize: 25,
     whereCondition: {},
@@ -47,12 +48,45 @@ class Users extends Component {
     this.handleRequest();
   }
 
-  handleChange = (event) => {
+  handleChange = (value) => {
     this.setState({
-      page: 1,
+      loader: true,
     });
+    let page = this.state.page + value;
+    this.setState({
+      whereCondition: this.state.filter,
+    });
+    let filter = this.state.whereCondition;
+
+    const getActiveAdmin = JSON.parse(
+      localStorage.getItem("persist:adminAuth")
+    );
+    const userTokens = JSON.parse(getActiveAdmin.adminAuth);
+    const tokens = userTokens.adminStatus;
+    const url = `https://sandbox.artisana.ng/api/artisans/admin/all?page=${page}&&pageSize=${
+      this.state.pageSize
+    }&&whereCondition=${JSON.stringify(filter)}`;
+    fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${tokens.token}`,
+      },
+    })
+      .then((data) => {
+        data.json().then((data) => {
+          this.props.sendAllUsers(data);
+          this.setState({
+            loader: false,
+          });
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        this.props.sendAllUsers("Failed to fetch");
+      });
   };
   render() {
+    const total = Math.ceil(this.props.allAdminUsers.total / 25);
     return (
       <div style={{ marginTop: "20px" }}>
         {this.props.allAdminUsers === "Failed to fetch" ? (
@@ -60,8 +94,8 @@ class Users extends Component {
         ) : (
           <PaginationControlled
             handleChange={this.handleChange}
-            page={this.state.page}
-            total={this.props.allAdminUsers.total}
+            loader={this.state.loader}
+            total={total}
             allUsers={this.props.allAdminUsers.items}
           />
         )}

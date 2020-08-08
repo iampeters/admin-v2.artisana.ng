@@ -1,11 +1,15 @@
 import React, { Component } from "react";
 import TextField from "@material-ui/core/TextField";
 import { Button } from "@material-ui/core";
+import { Link } from "react-router-dom";
 import { Alert, AlertTitle } from "@material-ui/lab";
+import PageLoader from "../../components/loader/pageLoader";
+import CircularIndeterminate from "../../components/loader/loader";
 class CreateNewAdmin extends Component {
   state = {
+    loader: false,
     message: "",
-    imageUrl: "myImages",
+    imageUrl: "",
     permissions: [],
     firstname: "",
     lastname: "",
@@ -21,6 +25,9 @@ class CreateNewAdmin extends Component {
     const userTokens = JSON.parse(getActiveAdmin.adminAuth);
     const tokens = userTokens.adminStatus;
     if (evt.target.files[0]) {
+      this.setState({
+        loader: true,
+      });
       const image = evt.target.files[0];
       let fd = new FormData();
 
@@ -33,11 +40,21 @@ class CreateNewAdmin extends Component {
         },
         body: fd,
       }).then((data) => {
-        data.json().then((data) => {
-          this.setState({
-            imageUrl: data.result,
+        data
+          .json()
+          .then((data) => {
+            this.setState({
+              imageUrl: data.result,
+              loader: false,
+            });
+          })
+          .catch((error) => {
+            this.setState({
+              message: error.message,
+              imageUrl: "",
+              loader: false,
+            });
           });
-        });
       });
     }
   };
@@ -47,6 +64,9 @@ class CreateNewAdmin extends Component {
     });
   };
   handleSubmit = () => {
+    this.setState({
+      loader: true,
+    });
     if (
       this.state.firstname === "" ||
       this.state.lastname === "" ||
@@ -63,6 +83,7 @@ class CreateNewAdmin extends Component {
         password: "",
         confirmPassword: "",
         phoneNumber: "",
+        loader: false,
       });
     } else if (this.state.password !== this.state.confirmPassword) {
       this.setState({
@@ -73,6 +94,7 @@ class CreateNewAdmin extends Component {
         password: "",
         confirmPassword: "",
         phoneNumber: "",
+        loader: false,
       });
     } else if (this.state.password.length < 6) {
       this.setState({
@@ -83,6 +105,7 @@ class CreateNewAdmin extends Component {
         password: "",
         confirmPassword: "",
         phoneNumber: "",
+        loader: false,
       });
     } else {
       const {
@@ -101,8 +124,8 @@ class CreateNewAdmin extends Component {
       const userTokens = JSON.parse(getActiveAdmin.adminAuth);
       const tokens = userTokens.adminStatus;
 
-      let url = "https://sandbox.artisana.ng/api​/admins​/create";
-      fetch("https://sandbox.artisana.ng/api​/admins​/create", {
+      let url = "https://sandbox.artisana.ng/api/admins/create";
+      fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -118,137 +141,275 @@ class CreateNewAdmin extends Component {
           imageUrl: imageUrl,
           permissions: permissions,
         }),
-      }).then((data) => {
-        data
-          .json()
-          .then((data) => {
-            console.log(data);
-          })
-          .catch((error) => {
-            console.log(error);
+      })
+        .then((data) => {
+          data
+            .json()
+            .then((data) => {
+              if (data.hasErrors || data.error) {
+                if (data.hasErrors) {
+                  this.setState({
+                    message: data.message,
+                    firstname: "",
+                    lastname: "",
+                    email: "",
+                    password: "",
+                    confirmPassword: "",
+                    phoneNumber: "",
+                    imageUrl: "",
+                    loader: false,
+                  });
+                } else {
+                  this.setState({
+                    message: data.error,
+                    firstname: "",
+                    lastname: "",
+                    email: "",
+                    password: "",
+                    confirmPassword: "",
+                    phoneNumber: "",
+                    imageUrl: "",
+                    loader: false,
+                  });
+                }
+              } else {
+                this.setState({
+                  message: "Admin registration successful",
+                  firstname: "",
+                  lastname: "",
+                  email: "",
+                  password: "",
+                  confirmPassword: "",
+                  phoneNumber: "",
+                  imageUrl: "",
+                  loader: false,
+                });
+              }
+            })
+            .catch((error) => {
+              this.setState({
+                message: error.message,
+                firstname: "",
+                lastname: "",
+                email: "",
+                password: "",
+                confirmPassword: "",
+                phoneNumber: "",
+                imageUrl: "",
+                loader: false,
+              });
+            });
+        })
+        .catch((error) => {
+          this.setState({
+            message: error.message,
+            firstname: "",
+            lastname: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
+            phoneNumber: "",
+            imageUrl: "",
+            loader: false,
           });
-      });
+        });
     }
   };
   render() {
     return (
-      <div style={{ marginTop: "150px" }}>
-        {this.state.imageUrl ? (
-          <div className="row m-0">
-            {this.state.message ? (
+      <div style={{ marginTop: "20px" }}>
+        <div className="row">
+          <div
+            className="col-lg-6 col-md-6 col-xs-12 col-sm-12 col-12"
+            style={{
+              fontWeight: "bold",
+              marginBottom: "20px",
+              color: "#974578",
+            }}
+          >
+            Create Admin
+          </div>
+          <div
+            className="col-lg-6 col-md-6 col-xs-12 col-sm-12 col-12"
+            style={{
+              fontWeight: "bold",
+              marginBottom: "20px",
+              color: "#974578",
+              justifyContent: "flex-end",
+              display: "flex",
+            }}
+          >
+            <Link to="/admins">
+              <Button
+                style={{
+                  background: " #974578",
+                  color: "white",
+                  marginRight: "10px",
+                }}
+              >
+                Back
+              </Button>
+            </Link>
+          </div>
+        </div>
+        <div style={{ marginTop: "100px" }}>
+          {this.state.message ? (
+            this.state.message === "Admin registration successful" ? (
+              <Alert
+                severity="success"
+                className="col-lg-11"
+                style={{ marginBottom: "20px" }}
+              >
+                <AlertTitle>Success</AlertTitle>
+                {this.state.message}
+              </Alert>
+            ) : (
               <div className="col-lg-11" style={{ marginBottom: "20px" }}>
                 <Alert severity="error">
                   <AlertTitle>Error</AlertTitle>
                   {this.state.message}
                 </Alert>
               </div>
-            ) : (
-              ""
-            )}
-            <div style={{ marginBottom: "20px" }} className="col-lg-6">
-              <TextField
-                id="outlined-password-input"
-                label="First Name"
-                type="text"
-                autoComplete="current-password"
-                variant="outlined"
-                className="col-lg-10"
-                onChange={(evt) => this.handleCreate(evt, "firstname")}
-                value={this.state.firstname}
-              />
-            </div>
-            <div style={{ marginBottom: "20px" }} className="col-lg-6">
-              <TextField
-                id="outlined-password-input"
-                label="Last Name"
-                type="text"
-                autoComplete="current-password"
-                variant="outlined"
-                className="col-lg-10"
-                onChange={(evt) => this.handleCreate(evt, "lastname")}
-                value={this.state.lastname}
-              />
-            </div>
-            <div style={{ marginBottom: "20px" }} className="col-lg-6">
-              <TextField
-                id="outlined-password-input"
-                label="Email Address"
-                type="email"
-                autoComplete="current-password"
-                variant="outlined"
-                className="col-lg-10"
-                onChange={(evt) => this.handleCreate(evt, "email")}
-                value={this.state.email}
-              />
-            </div>
-            <div style={{ marginBottom: "20px" }} className="col-lg-6">
-              <TextField
-                id="outlined-password-input"
-                label="Phone Number"
-                type="text"
-                autoComplete="current-password"
-                variant="outlined"
-                className="col-lg-10"
-                onChange={(evt) => this.handleCreate(evt, "phoneNumber")}
-                value={this.state.phoneNumber}
-              />
-            </div>
-            <div style={{ marginBottom: "20px" }} className="col-lg-6">
-              <TextField
-                id="outlined-password-input"
-                label="Password"
-                type="password"
-                autoComplete="current-password"
-                variant="outlined"
-                className="col-lg-10"
-                onChange={(evt) => this.handleCreate(evt, "password")}
-                value={this.state.password}
-              />
-            </div>
-            <div style={{ marginBottom: "20px" }} className="col-lg-6">
-              <TextField
-                id="outlined-password-input"
-                label="Confirm Password"
-                type="password"
-                autoComplete="current-password"
-                variant="outlined"
-                className="col-lg-10"
-                onChange={(evt) => this.handleCreate(evt, "confirmPassword")}
-                value={this.state.confirmPassword}
-              />
-            </div>
-            <div className="col-lg-12">
-              <Button
-                style={{ background: "#974578", color: "white" }}
-                onClick={this.handleSubmit}
-              >
-                Submit
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="container col-lg-5">
-            <div className="input-group">
-              <div className="input-group-prepend">
-                <span className="input-group-text" id="inputGroupFileAddon01">
-                  Upload
-                </span>
-              </div>
-              <div className="custom-file">
-                <input
-                  type="file"
-                  className="custom-file-input"
-                  id="inputGroupFile01"
-                  aria-describedby="inputGroupFileAddon01"
-                  onChange={(evt) => this.handleFile(evt, "imageupload")}
+            )
+          ) : (
+            ""
+          )}
+          {this.state.imageUrl ? (
+            <div className="row m-0">
+              <div style={{ marginBottom: "20px" }} className="col-lg-6">
+                <TextField
+                  id="outlined-password-input"
+                  label="First Name"
+                  type="text"
+                  autoComplete="current-password"
+                  variant="outlined"
+                  className="col-lg-10"
+                  onChange={(evt) => this.handleCreate(evt, "firstname")}
+                  value={this.state.firstname}
                 />
-                <label className="custom-file-label" htmlFor="inputGroupFile01">
-                  Choose file
-                </label>
+              </div>
+              <div style={{ marginBottom: "20px" }} className="col-lg-6">
+                <TextField
+                  id="outlined-password-input"
+                  label="Last Name"
+                  type="text"
+                  autoComplete="current-password"
+                  variant="outlined"
+                  className="col-lg-10"
+                  onChange={(evt) => this.handleCreate(evt, "lastname")}
+                  value={this.state.lastname}
+                />
+              </div>
+              <div style={{ marginBottom: "20px" }} className="col-lg-6">
+                <TextField
+                  id="outlined-password-input"
+                  label="Email Address"
+                  type="email"
+                  autoComplete="current-password"
+                  variant="outlined"
+                  className="col-lg-10"
+                  onChange={(evt) => this.handleCreate(evt, "email")}
+                  value={this.state.email}
+                />
+              </div>
+              <div style={{ marginBottom: "20px" }} className="col-lg-6">
+                <TextField
+                  id="outlined-password-input"
+                  label="Phone Number"
+                  type="text"
+                  autoComplete="current-password"
+                  variant="outlined"
+                  className="col-lg-10"
+                  onChange={(evt) => this.handleCreate(evt, "phoneNumber")}
+                  value={this.state.phoneNumber}
+                />
+              </div>
+              <div style={{ marginBottom: "20px" }} className="col-lg-6">
+                <TextField
+                  id="outlined-password-input"
+                  label="Password"
+                  type="password"
+                  autoComplete="current-password"
+                  variant="outlined"
+                  className="col-lg-10"
+                  onChange={(evt) => this.handleCreate(evt, "password")}
+                  value={this.state.password}
+                />
+              </div>
+              <div style={{ marginBottom: "20px" }} className="col-lg-6">
+                <TextField
+                  id="outlined-password-input"
+                  label="Confirm Password"
+                  type="password"
+                  autoComplete="current-password"
+                  variant="outlined"
+                  className="col-lg-10"
+                  onChange={(evt) => this.handleCreate(evt, "confirmPassword")}
+                  value={this.state.confirmPassword}
+                />
+              </div>
+              <div className="col-lg-12">
+                {this.state.loader ? (
+                  <Button style={{ background: "#974578", color: "white" }}>
+                    <CircularIndeterminate />
+                  </Button>
+                ) : (
+                  <Button
+                    style={{ background: "#974578", color: "white" }}
+                    onClick={this.handleSubmit}
+                  >
+                    Submit
+                  </Button>
+                )}
               </div>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="container col-lg-5">
+              {this.state.loader ? (
+                <PageLoader />
+              ) : (
+                <div>
+                  <h6
+                    className="col-lg-12"
+                    style={{
+                      textAlign: "center",
+                      fontWeight: "bold",
+                      color: "#974578",
+                    }}
+                  >
+                    Upload and image
+                  </h6>
+                  <div className="input-group">
+                    <div className="input-group-prepend">
+                      <span
+                        className="input-group-text"
+                        id="inputGroupFileAddon01"
+                      >
+                        Upload
+                      </span>
+                    </div>
+                    <div className="custom-file">
+                      <input
+                        type="file"
+                        className="custom-file-input"
+                        id="inputGroupFile01"
+                        aria-describedby="inputGroupFileAddon01"
+                        onChange={(evt) => this.handleFile(evt, "imageupload")}
+                        value={this.state.imageUrl}
+                      />
+                      <label
+                        className="custom-file-label"
+                        htmlFor="inputGroupFile01"
+                      >
+                        Choose file
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     );
   }

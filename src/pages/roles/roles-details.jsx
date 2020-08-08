@@ -8,26 +8,16 @@ import LockOpenIcon from "@material-ui/icons/LockOpen";
 import { Link } from "react-router-dom";
 import { Button } from "@material-ui/core";
 import CircularIndeterminate from "../../components/loader/loader";
-class AdminDetails extends Component {
+class RolesDetails extends Component {
   state = {
     loader: false,
-    id: this.props.match.params.adminDetails,
-    firstname: "",
-    lastname: "",
-    email: "",
-    phoneNumber: "",
-    address: "",
-    imageUrl: "",
-    hasResult: false,
-    state: "",
+    id: this.props.match.params.roleDetails,
+    name: "",
     createdOn: "",
     updatedOn: "",
     updatedBy: "",
-    userId: "",
-    lastlogin: "",
-    country: "",
-    active: "",
-    locked: "",
+    permissions: "",
+    hasResult: "",
   };
   componentDidMount() {
     const getActiveAdmin = JSON.parse(
@@ -35,7 +25,7 @@ class AdminDetails extends Component {
     );
     const userTokens = JSON.parse(getActiveAdmin.adminAuth);
     const tokens = userTokens.adminStatus;
-    const url = `https://sandbox.artisana.ng/api/admins/${this.state.id}`;
+    const url = `https://sandbox.artisana.ng/api/roles/${this.state.id}`;
     fetch(url, {
       method: "GET",
       headers: {
@@ -45,41 +35,20 @@ class AdminDetails extends Component {
       .then((data) => {
         data.json().then((data) => {
           console.log(data);
-          const firstname = data.result.firstname;
-          const lastname = data.result.lastname;
-          const email = data.result.email;
-          const phoneNumber = data.result.phoneNumber;
-          const address = data.result.address;
-          const imageUrl = data.result.imageUrl;
 
-          const state = data.result.state;
-
-          const country = data.result.country;
           const createdOn = data.result.createdOn;
-
+          const permissions = data.result.permissions;
           const updatedOn = data.result.updatedOn;
           const updatedBy = data.result.updatedBy;
-          const userId = data.result._id;
-          const lastlogin = data.result.lastLogin;
-          const active = data.result.isActive;
-          const locked = data.result.isLocked;
+          const name = data.result.name;
+          const hasResult = data.hasResults;
           this.setState({
-            hasResult: data.hasResults,
-            firstname,
-            lastname,
-            email,
-            phoneNumber,
-            address,
-            imageUrl,
-            state,
             createdOn,
             updatedOn,
             updatedBy,
-            userId,
-            country,
-            lastlogin,
-            active,
-            locked,
+            name,
+            permissions,
+            hasResult,
           });
         });
       })
@@ -87,11 +56,7 @@ class AdminDetails extends Component {
         console.log(error);
       });
   }
-  handleUpadateForm = (evt, attr) => {
-    this.setState({
-      [attr]: evt.target.value,
-    });
-  };
+
   handleDelete = (id) => {
     this.setState({
       loader: true,
@@ -101,7 +66,7 @@ class AdminDetails extends Component {
     );
     const userTokens = JSON.parse(getActiveAdmin.adminAuth);
     const tokens = userTokens.adminStatus;
-    const url = `https://sandbox.artisana.ng/api/admins/delete/${id}`;
+    const url = `https://sandbox.artisana.ng/api/roles/delete/${id}`;
     fetch(url, {
       method: "DELETE",
       headers: {
@@ -115,7 +80,7 @@ class AdminDetails extends Component {
           this.setState({
             loader: false,
           });
-          window.location.href = "/admins";
+          window.location.href = "/roles";
         })
         .catch((error) => {
           console.log(error);
@@ -137,7 +102,7 @@ class AdminDetails extends Component {
               color: "#974578",
             }}
           >
-            Admins Details
+            Role Details
           </div>
           <div
             className="col-lg-6 col-md-6 col-xs-12 col-sm-12 col-12"
@@ -146,7 +111,7 @@ class AdminDetails extends Component {
               justifyContent: "flex-end",
             }}
           >
-            <Link to="/admins">
+            <Link to="/roles">
               <Button
                 variant="outlined"
                 style={{ color: "#974578", marginRight: "10px" }}
@@ -159,33 +124,6 @@ class AdminDetails extends Component {
 
         {this.state.hasResult ? (
           <div style={{ marginTop: "30px" }}>
-            <div
-              className="col-lg-12"
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginBottom: "20px",
-              }}
-            >
-              <div
-                style={{
-                  width: "100px",
-                  height: "100px",
-                  borderRadius: "100%",
-                  border: "2px solid #974578",
-                }}
-              >
-                <img
-                  src={this.state.imageUrl}
-                  alt="imageUrl"
-                  style={{
-                    borderRadius: "100%",
-                    width: "100px",
-                    height: "100px",
-                  }}
-                ></img>
-              </div>
-            </div>
             <div
               className="col-lg-12"
               style={{
@@ -209,80 +147,18 @@ class AdminDetails extends Component {
                   color: " #974578",
                 }}
               >
-                Admin Details
+                Role Details
               </div>
               <div
                 className="col-lg-6"
                 style={{ marginBottom: "20px", fontWeight: "bold" }}
               >
                 <span style={{ fontWeight: "bold", color: "#974578" }}>
-                  First Name
+                  Name
                 </span>
                 <br></br>
-                {this.state.firstname}
+                {this.state.name ? this.state.name : "N/A"}
               </div>
-              <div
-                className="col-lg-6"
-                style={{ marginBottom: "20px", fontWeight: "bold" }}
-              >
-                <span style={{ fontWeight: "bold", color: "#974578" }}>
-                  Last Name
-                </span>
-                <br></br>
-                {this.state.lastname}
-              </div>
-              <div
-                className="col-lg-6"
-                style={{ marginBottom: "20px", fontWeight: "bold" }}
-              >
-                <span style={{ fontWeight: "bold", color: "#974578" }}>
-                  Email Address
-                </span>
-                <br></br>
-                {this.state.email}
-              </div>
-              <div
-                className="col-lg-6"
-                style={{ marginBottom: "20px", fontWeight: "bold" }}
-              >
-                <span style={{ fontWeight: "bold", color: "#974578" }}>
-                  Phone Number
-                </span>
-                <br></br>
-                {this.state.phoneNumber}
-              </div>
-              <div
-                className="col-lg-6"
-                style={{ marginBottom: "20px", fontWeight: "bold" }}
-              >
-                <span style={{ fontWeight: "bold", color: "#974578" }}>
-                  Address
-                </span>
-                <br></br>
-                {this.state.address ? this.state.address : "N/A"}
-              </div>
-
-              <div
-                className="col-lg-6"
-                style={{ marginBottom: "20px", fontWeight: "bold" }}
-              >
-                <span style={{ fontWeight: "bold", color: "#974578" }}>
-                  State
-                </span>
-                <br></br>
-                {this.state.state ? this.state.state : "N/A"}
-              </div>
-              <div
-                className="col-lg-6"
-                style={{ marginBottom: "20px", fontWeight: "bold" }}
-              >
-                <span style={{ fontWeight: "bold", color: "#974578" }}>
-                  Country
-                </span>
-                <br></br>
-                {this.state.country ? this.state.country : "N/A"}
-              </div>
-
               <div
                 className="col-lg-6"
                 style={{ marginBottom: "20px", fontWeight: "bold" }}
@@ -313,44 +189,7 @@ class AdminDetails extends Component {
                 <br></br>
                 {this.state.createdOn ? getDate(this.state.createdOn) : "N/A"}
               </div>
-              <div
-                className="col-lg-6"
-                style={{ marginBottom: "20px", fontWeight: "bold" }}
-              >
-                <span style={{ fontWeight: "bold", color: "#974578" }}>
-                  Last Login
-                </span>
-                <br></br>
-                {this.state.lastlogin ? getDate(this.state.lastlogin) : "N/A"}
-              </div>
-              <div
-                className="col-lg-6"
-                style={{ marginBottom: "20px", fontWeight: "bold" }}
-              >
-                <span style={{ fontWeight: "bold", color: "#974578" }}>
-                  Active
-                </span>
-                <br></br>
-                {this.state.active ? (
-                  <CheckIcon style={{ color: "green" }} />
-                ) : (
-                  <CheckIcon style={{ color: "red" }} />
-                )}
-              </div>
-              <div
-                className="col-lg-6"
-                style={{ marginBottom: "20px", fontWeight: "bold" }}
-              >
-                <span style={{ fontWeight: "bold", color: "#974578" }}>
-                  Locked
-                </span>
-                <br></br>
-                {this.state.locked ? (
-                  <LockIcon style={{ color: "green" }} />
-                ) : (
-                  <LockOpenIcon style={{ color: "red" }} />
-                )}
-              </div>
+
               <div
                 className="col-lg-6"
                 style={{ marginBottom: "20px", fontWeight: "bold" }}
@@ -393,4 +232,4 @@ class AdminDetails extends Component {
   }
 }
 
-export default AdminDetails;
+export default RolesDetails;
